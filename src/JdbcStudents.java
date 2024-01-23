@@ -44,6 +44,13 @@ public class JdbcStudents {
     }
 
     private static void saveStudentRecord(Connection connection, int id, String name, int age, String school) throws SQLException {
+        // Check if a student with the same ID already exists
+        if (studentExists(connection, id)) {
+            System.out.println("Student with ID " + id + " already exists. Skipping insertion.");
+            return;
+        }
+
+        // If not, insert the new record
         String insertSQL = "INSERT INTO students (id, name, age, school) VALUES (?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
             preparedStatement.setInt(1, id);
@@ -51,6 +58,17 @@ public class JdbcStudents {
             preparedStatement.setInt(3, age);
             preparedStatement.setString(4, school);
             preparedStatement.execute();
+            System.out.println("Student with ID " + id + " inserted successfully.");
+        }
+    }
+
+    private static boolean studentExists(Connection connection, int id) throws SQLException {
+        String selectSQL = "SELECT id FROM students WHERE id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(selectSQL)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next(); // If resultSet.next() is true, a student with the given ID exists
+            }
         }
     }
 
@@ -68,4 +86,6 @@ public class JdbcStudents {
             }
         }
     }
+
+
 }
