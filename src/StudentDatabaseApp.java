@@ -36,3 +36,19 @@ public class StudentDatabaseApp {
         }
     }
 
+
+    private static void retrieveStudentRecords(Connection connection) throws SQLException {
+        String selectSQL = "SELECT * FROM students";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(selectSQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            System.out.println("Student Records:");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                int age = resultSet.getInt("age");
+                String school = resultSet.getString("school");
+                System.out.println("ID: " + id + ", Name: " + name + ", Age: " + age + ", School: " + school);
+            }
+        }
+    }
+}
