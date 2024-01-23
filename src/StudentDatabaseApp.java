@@ -36,6 +36,23 @@ public class StudentDatabaseApp {
         }
     }
 
+    private static void createTable(Connection connection) throws SQLException {
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS students (id INT PRIMARY KEY, name VARCHAR(255), age INT, school VARCHAR(255))";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(createTableSQL)) {
+            preparedStatement.execute();
+        }
+    }
+
+    private static void saveStudentRecord(Connection connection, int id, String name, int age, String school) throws SQLException {
+        String insertSQL = "INSERT INTO students (id, name, age, school) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, name);
+            preparedStatement.setInt(3, age);
+            preparedStatement.setString(4, school);
+            preparedStatement.execute();
+        }
+    }
 
     private static void retrieveStudentRecords(Connection connection) throws SQLException {
         String selectSQL = "SELECT * FROM students";
