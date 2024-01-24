@@ -25,8 +25,17 @@ public class JdbcStudents {
 
             // Save and retrieve records
             saveStudentRecord(connection, 1, "Elissa", 17, "RCA");
-            saveStudentRecord(connection, 1, "Prince", 23, "University of Rwanda");
+            saveStudentRecord(connection, 2, "Prince", 23, "University of Rwanda");
             retrieveStudentRecords(connection);
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Do you want to delete a student at a certain ID? (y/n): ");
+            String choice = scanner.nextLine().trim().toLowerCase();
+
+            //Check if yes to call delete method
+            if(choice.equals("y")) {
+                deleteStudentRecord(connection);
+            }
 
             // Close the connection
             connection.close();
@@ -86,6 +95,27 @@ public class JdbcStudents {
             }
         }
     }
+    private static void deleteStudentRecord(Connection connection) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the ID of the student to delete: ");
+        int idToDelete = scanner.nextInt();
+        //Check if the student with the given ID exists before attempting deletion
+        if(!studentExists(connection, idToDelete)) {
+            System.out.println("Student with ID " + idToDelete + " does not exist, ...Skipping deletion😒");
+            return;
+        }
+        //Then, if the student exists, delete the record
+        String deleteSQL = "DELETE FROM students WHERE id=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
+            preparedStatement.setInt(1, idToDelete);
+            int rowsAffected = preparedStatement.executeUpdate();
 
-
+            if(rowsAffected > 0){
+                System.out.println("Student with ID " + idToDelete + " deleted successfully.");
+            } else {
+                System.out.println("Failed to delete student with ID " + idToDelete + ". No matching record found.");
+            }
+        }
+    }
 }
+
